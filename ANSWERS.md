@@ -1,0 +1,13 @@
+# HW-2 Answers
+
+## Question 1: Your app calls the second service by name. How does that work, and why does the same name not work between two containers on the default docker run network?
+When Docker Compose is executed, the internal networks are created along with the DNS process of those containers. That means that our app container can connect to the Redis service using its service name `cache` only. However, on the default bridge network in objection to Docker run command, the automatic DNS process is not available on the default Docker run network due to security reasons.
+
+## Question 2: Which of your services is stateless and which is not? Show the evidence: what did you do, and what happened to your data (for example docker compose rm -sf app and then docker compose down, and docker compose down -v)?
+According to our architecture, we have `app` service as completely stateless and the Redis `cache` service along with Redis `redisdata` volume is stateful. This can be tested by executing the command `docker compose rm -sf app` and running it again, and we can see that the counter survives because the state is maintained in Redis instead of being there inside the app's container. Even doing `docker compose down ` does not delete the data stored in Redis due to the fact that the named volume remains available on the host. However, executing `docker compose down -v` does delete the named volume completely.
+
+## Question 3: Where should a database password come from, and why is it a problem to commit it to Git, even in a private repository?
+The passwords of databases and important verification information should always be supplied during runtime by utilizing environment variables retrieved from local files similar to `.env`, which must not be under source control. Saving passwords and other sensitive information to Git results in an enormous security hazard, as they will remain part of the commit history of the repository even if removed at a later time. Once the credentials are committed to the repository, they become accessible for anyone who might use the repository which leads to security threats in many environments.
+
+## AI Assistant Usage
+I used an AI tool to layout the docker-compose file and define the container communication and network. Also used to write succinct and clean explanations for these written questions. I have read, understood and checked manually every line before submitting.
